@@ -14,6 +14,53 @@ cdc <- as_tibble(cdc)
 
 Group Section:
 
+Overall question: What is the overall average difference in weight vs desired weight between men and women?
+
+New Tools: Permutation Test
+
+Answer: Based on the permution test we can conclude that women on average tend to want to change their weight more than men. The permutation test shows the distribition of the difference of desired weight change between men and women. The purple line shows the average of the permutation test, this line is also further to the right which supports our conclusion that women tend to want to change their weight more than men.
+
+```{r}
+
+#get desired weight change column
+cdc <- mutate(cdc, wtchange = wtdesire - weight)
+
+#filter between male and female
+overall <- select(cdc, wtchange)
+male <- filter(cdc, gender == "m") %>% select(wtchange)
+female <- filter(cdc, gender == "f") %>% select(wtchange)
+
+#get some means
+
+mean(overall$wtchange) # = -14.5891
+mean(male$wtchange) # = -10.70613
+mean(female$wtchange) # = -18.15118
+
+#permutation test
+  #i will conduct the test by filtering male and female dataset, then subtracting the values randomly as abs(female)-abs(male). this will give a histogram that shows how much more one gender wants weight change than the other. we use absolute values because we care only about how much they want to change their weight and not the direction in which the weight changes
+
+vector.change <- vector("double", length = 1000)
+for(i in seq_along(vector.change)){
+  vector.change[i] <- abs(sample_n(female, 1)) - abs(sample_n(male, 1))
+}
+
+change <- unlist(vector.change)
+
+#plot the distribution
+  #the purple line shows the average of the generated data set, blue shows the average desired weight change for males, red for females, and yellow for the average of the actual data sat
+  #as we can see the purple line is significantly further away from any of the other lines. since this line has a positive x-value, we can deduce that women on average want to change their weight more than men.
+
+
+ggplot() + geom_histogram(aes(change), bins = 50) +
+  geom_vline(xintercept = -10.70613, color = "blue") + #male
+  geom_vline(xintercept = -18.15118, color = "red") + #female
+  geom_vline(xintercept =  mean(change), color = "purple") + #scrambled data 
+  geom_vline(xintercept =  -14, color = "yellow") + #scrambled data
+  ggtitle("Permutation Test of Female - Male Desired Weight Change") +
+  xlab("Female - Male Desired Change (in pounds)") +
+  ylab("Count")
+```
+
 Subsections:
 
 David Subquestion:
@@ -26,7 +73,7 @@ Null Hypothesis: There is no difference in desired weight change among different
 Alternate Hypothesis: There is a difference in desired weight change among different age groups.
 Test Statistic: Average desired weight change of each age group.
 
-Answer:
+Answer: Based on the test below, we can conclude that there is a difference among age groups in desired weight change. This, we reject the null hypothesis in favor of the alternate. The group that demonstrated the greatest want to change was the 51-61 age group while the group that cared the least was the 84-99 age group.
 
 ```{r}
 
@@ -44,17 +91,7 @@ ggplot(data = cdc, mapping = aes(x = age, y = wtdesire - weight, color = gender)
   xlab("Age") +
   ylab("Desired Change (in pounds)")
   
-
-#get the average desired overall weight change, male weight change, and female weight
-
 cdc <- mutate(cdc, wtchange = wtdesire - weight)
-overall <- select(cdc, wtchange)
-male <- filter(cdc, gender == "m") %>% select(wtchange)
-female <- filter(cdc, gender == "f") %>% select(wtchange)
-
-mean(overall$wtchange) # = -14.5891
-mean(male$wtchange) # = -10.70613
-mean(female$wtchange) # = -18.15118
 
 #get averages for age groups
 
@@ -86,20 +123,21 @@ for(i in seq_along(vector.wtchange)){
   #make it a data frame, i now have a bunch of weight differences, the variable that was scrambled was age
 
 wtchange.df <- unlist(vector.wtchange)
-mean(wtchange.df) #= -13.198
+mean(wtchange.df)
 
+  #plot distribution of desired weight change differences. purple line denotes sample mean, yellow denotes the age group of 51-61 which is the group that had the largest desired change.
 ggplot() + geom_histogram(aes(wtchange.df), bins = 50) +
-  geom_vline(xintercept = -14.5891, color = "yellow") +
-  geom_vline(xintercept = -10.70613, color = "blue") +
-  geom_vline(xintercept = -18.15118, color = "red") +
-  geom_vline(xintercept =  -13.198, color = "purple") +
+  geom_vline(xintercept = -19, color = "yellow") + #age 51 - 61
+  geom_vline(xintercept =  mean(wtchange.df), color = "purple") + #scrambled data
   ggtitle("Permutation Test of Desired Weight Change") +
   xlab("Desired Weight Change") +
   ylab("Count")
 
-
-  
-
-
-
 ```
+
+
+
+
+Summary of who did what:
+
+David: Permutation test for overall question
