@@ -171,6 +171,59 @@ ex0plot <- ggplot(ex0, aes(gender)) + geom_point(aes(y = wtdesire-weight)) + geo
 ggarrange(ex0plot, ex1plot + rremove("y.title"))
 ```
 
+Drew Subsection:
+
+I will be using the correlation permutation test from lab 12 to answer a new question about the dataset.
+
+Question: Is there a relationship between a person's height and the magnitude of their desired weight change?
+
+Null: There is no significant relationship between height and desired weight change.
+
+Alternative: There is a significant relationship between height and desired weight change.
+
+This is an interesting question because for an individual at a higher height, there is a good chance they weigh more than the average person. We can use this question to determine if people at greater sizes are satisfied with their bodies or not relative to the average person.
+
+New tools: I will be using the correlation permutation test to test the relationship between the two variables. I will pass in two vectors, one with heights and one with difference between weight and desired weight. I will then mix up the labels and generate 1000 "fake" correlations between the data. After I will plot the real correlation on this histogram and determine if the relationship is significant.
+
+Answer: As you can see from the graph, there is a statistically significant positive correlation between height and the desired change in weight. The actual correlation is 0.0837, while in the correlation permutation tests, no sample result exceeded 0.03. However, this correlation is quite low and may not be practically significant in the real world. To determine that would require a professional domain expert that works with census data such as this. Therefore, I can reject the null hypothesis, but the results of this test may or may not be useful over populations.
+
+```{r}
+#original graph:
+ggplot(data = cdc) + geom_bar(mapping=aes(x = smoke100)) + facet_wrap(~ genhlth)
+
+#creating column for desired weight change
+cdc <- mutate(cdc, wtdiff = wtdesire - weight)
+
+#extracting vectors for test
+heights <- cdc$height
+diffs <- cdc$wtdiff
+
+#correlation permutation code
+perm_cor <- function(perms = 1000, x, y)
+{
+  cor_coeffs <- numeric(perms)
+
+  for (i in c(1:perms))
+  {
+    mix_up <- sample(y)
+
+    coefficient <- cor(x, mix_up)
+    cor_coeffs[i] <- coefficient
+  }
+  
+  return(cor_coeffs)
+}
+
+fakes <- perm_cor(1000, heights, diffs)
+real <- cor(heights, diffs)
+
+ggplot() + geom_histogram(aes(fakes)) +
+  geom_vline(xintercept = real) +
+  ggtitle("Correlation Permutation Test Between Height and Desired Weight Difference") +
+  xlab("Correlation") +
+  ylab("")
+
+```
 
 Summary of who did what:
 
