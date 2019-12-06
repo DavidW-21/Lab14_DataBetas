@@ -8,3 +8,95 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+Group Section:
+
+Subsections:
+
+David Subquestion:
+I will be using recently learned tools to better answer my initial question from the original lab.
+Question: How does age effect desired weight change?
+This Question is important because it can give us insight as to how different age groups behave. For example, if we were to conclude that a certain age group wanted to change their weight, we could market gym memberships to that specific age group.
+
+New Tools: Permutation Test - I will be scrambling "age" to determine if their is a difference between age group and desired weight change.
+Null Hypothesis: There is no difference in desired weight change among different age groups.
+Alternate Hypothesis: There is a difference in desired weight change among different age groups.
+Test Statistic: Average desired weight change of each age group.
+
+Answer:
+
+```{r}
+
+#Start by recreating the original plot which provided the initial conclusion
+  
+  #select relevent columns
+
+cdc <- select(cdc, gender, age, weight, wtdesire)
+
+  #plot
+
+ggplot(data = cdc, mapping = aes(x = age, y = wtdesire - weight, color = gender)) +
+  geom_smooth(se = FALSE) +
+  ggtitle("Desired Weight Change VS Age") +
+  xlab("Age") +
+  ylab("Desired Change (in pounds)")
+  
+
+#get the average desired overall weight change, male weight change, and female weight
+
+cdc <- mutate(cdc, wtchange = wtdesire - weight)
+overall <- select(cdc, wtchange)
+male <- filter(cdc, gender == "m") %>% select(wtchange)
+female <- filter(cdc, gender == "f") %>% select(wtchange)
+
+mean(overall$wtchange) # = -14.5891
+mean(male$wtchange) # = -10.70613
+mean(female$wtchange) # = -18.15118
+
+#get averages for age groups
+
+mean(`1828` <- filter(cdc, age <= 25)$wtchange) #= -7.477639
+mean(`2939` <- filter(cdc, age >= 29 & age <= 39)$wtchange) #= -15.34444
+mean(`4050` <- filter(cdc, age >= 40 & age <= 50)$wtchange) #= -17.86249
+mean(`5161` <- filter(cdc, age >= 51 & age <= 61)$wtchange) #= -19.33836
+mean(`6272` <- filter(cdc, age >= 62 & age <= 72)$wtchange) #= -15.31537
+mean(`7383` <- filter(cdc, age >= 73 & age <= 83)$wtchange) #= -8.842179
+mean(`8499` <- filter(cdc, age >= 84 & age <= 99)$wtchange) #= -3.003891
+
+
+
+#Create the permutation test
+
+  #Filter to make a weight and wtdesire data frame
+
+cdc.weight <- select(cdc, "weight")
+cdc.wtdesire <- select(cdc, "wtdesire")   
+
+  #generate differences
+
+vector.wtchange <- vector("double", length = 1000)
+for(i in seq_along(vector.wtchange)){
+  vector.wtchange[i] <- sample_n(cdc.wtdesire, 1) - sample_n(cdc.weight, 1)
+
+}
+
+  #make it a data frame, i now have a bunch of weight differences, the variable that was scrambled was age
+
+wtchange.df <- unlist(vector.wtchange)
+mean(wtchange.df) #= -13.198
+
+ggplot() + geom_histogram(aes(wtchange.df), bins = 50) +
+  geom_vline(xintercept = -14.5891, color = "yellow") +
+  geom_vline(xintercept = -10.70613, color = "blue") +
+  geom_vline(xintercept = -18.15118, color = "red") +
+  geom_vline(xintercept =  -13.198, color = "purple") +
+  ggtitle("Permutation Test of Desired Weight Change") +
+  xlab("Desired Weight Change") +
+  ylab("Count")
+
+
+  
+
+
+
+```
