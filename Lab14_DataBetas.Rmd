@@ -1,0 +1,10 @@
+---
+title: "Lab14_DataBetas"
+author: "Brandon Nelsen. David Washburn, Burke Parent, Drew Hoffman, Tanner Ball"
+date: "12/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
