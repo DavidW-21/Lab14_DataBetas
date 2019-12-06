@@ -231,17 +231,17 @@ I am going to be answering the my original questiion in a different way.
 Null Hypothesis:
 Both genders would rather lose weight than gain weight.
 
-I looked at the distirbutions of men and women between desired weight and weight, in my old question I used height as a factor but that was unneeded here so I am answering the original since height and weight have are very correlated. Now I understand that the test I did isn't 100% useful because there isn't a time difference and I am only pulling data from men and women, but I thought it would be good to run tests and show the averages and the quantiles of average weights between men and women and how they only differ on average by around 2 pounds.
+I looked at the distirbutions of men and women between desired weight and height, in my old question I used height as a factor so I am answering the original question. Now I understand that the test I did isn't 100% useful because there isn't a time difference and I am only pulling data from men and women, but I thought it would be good to run tests and show the averages and the quantiles of average heights between men and women and how they only differ on average by around 2 pounds.
 
 New Tools:
-I did a permutation test, I used mutate functions, for loops, quantile and mean functions, and ggplot tools that make the graphs easier to read. Similar to david I did it between weight and desired weight, but instead I changed from age to gender/sex.
+I did a permutation test, I used mutate functions, for loops, quantile and mean functions, and ggplot tools that make the graphs easier to read. Similar to david I did it between weight and height, but instead I changed from age to gender/sex.
 
 Answer:
-It makes it clear that the differences between men and women are similar, but still difference, most men would rather gain a little bit of weight (possibly in muscle) while most women would rather lose a little bit of weight. This is possibly due to the societal norms of men being more muscular and women being thiner and slimmer. Here in fact we reject the null hypothesis that both genders would rather lose weight. 
+It makes it clear that the differences between men and women are similar, but still difference, most men would rather gain a little bit of weight (possibly in muscle) while most women would rather lose a little bit of weight. This is possibly due to the societal norms of men being more muscular and women being thiner and slimmer. Here in fact we reject the null hypothesis that both genders would rather lose weight based on how tall they are. 
 
 ```{r}
-differenceWomen <- cdc %>% filter(gender == "f") %>% mutate(difW = wtdesire - weight) %>% select(difW)
-differenceMen <- cdc %>% filter(gender == "m") %>% mutate(difM = wtdesire - weight) %>% select(difM)
+differenceWomen <- cdc %>% filter(gender == "f") %>% mutate(difW = wtdesire - height) %>% select(difW)
+differenceMen <- cdc %>% filter(gender == "m") %>% mutate(difM = wtdesire - height) %>% select(difM)
 
 test <- vector("double", length = 1000)
 for(i in seq_along(test)){
@@ -264,16 +264,16 @@ ggplot()+
   geom_vline(xintercept = -50) +
   geom_vline(xintercept = 50) +
   geom_vline(xintercept = -1.058, color = "red") +
-  ggtitle("Distribution of Desired Weight Difference from Actual Weight for Men")+
-  xlab("Desired weight - Actual weight")
+  ggtitle("Distribution of Desired Weight Difference from Height for Men")+
+  xlab("Desired weight - Height")
 
 ggplot()+
   geom_histogram(aes(women), binwidth = 5)+
   geom_vline(xintercept = -50) +
   geom_vline(xintercept = 55) +
   geom_vline(xintercept = 1.493, color = "red") +
-  ggtitle("Distribution of Desired Weight Difference from Weight for Women")+
-  xlab("Desired weight - Actual weight")
+  ggtitle("Distribution of Desired Weight Difference from Height for Women")+
+  xlab("Desired weight - Height")
 
 ```
 Summary of who did what:
