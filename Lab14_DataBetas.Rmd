@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(modelr)
 source("http://www.openintro.org/stat/data/cdc.R")
 cdc <- as_tibble(cdc)
 ```
@@ -18,7 +19,7 @@ Overall question: What is the overall average difference in weight vs desired we
 
 New Tools: Permutation Test
 
-Answer: Based on the permution test we can conclude that women on average tend to want to change their weight more than men. The permutation test shows the distribition of the difference of desired weight change between men and women. The purple line shows the average of the permutation test, this line is also further to the right which supports our conclusion that women tend to want to change their weight more than men.
+Answer: Based on the permutation test we can conclude that women on average tend to want to change their weight more than men. The permutation test shows the distribition of the difference of desired weight change between men and women. The purple line shows the average of the permutation test, this line is also further to the right which supports our conclusion that women tend to want to change their weight more than men.
 
 ```{r}
 
@@ -135,9 +136,43 @@ ggplot() + geom_histogram(aes(wtchange.df), bins = 50) +
 
 ```
 
+Tanner Subquestion:
+I will be creating a model to help answer my question from the original lab.
 
+Question: Is there a noticeable difference between men and women on how much they want their weight to change? Furthermore, is there a difference in desired weight change between those who have worked out in the last month and those that haven't?
+
+New Tool: Linear Modeling - I wanted to try out modeling the data and getting a prediction for desired weight change in males and females who have exercised recently and who have not exercised recently.
+
+Answer: Here we get a much clearer look at how the different genders want their weight to change. In general, females want to lose more weight than men do. A potentially surprising result we get from this model is that we see that people who have not exercised in the last month want to lose more weight on average than those who have exercised recently. Perhaps this is because recent exercisers have already lost some weight and thus don't feel like they need to lose as much as non-exercisers?
+```{r}
+#install.packages("ggpubr")
+# library used to arrange the two plots on the same page
+library(ggpubr)
+
+# original graph:
+ggplot(data=cdc, mapping=aes(x = gender, y = wtdesire-weight)) + geom_jitter(mapping=aes(color=gender))+facet_wrap(~ exerany)
+
+# separate by recent exercise
+ex1 <- filter(cdc, exerany == 1)
+ex0 <- filter(cdc, exerany == 0)
+
+# generate our models and data grids
+modelEx1 <- lm(wtdesire-weight ~ gender, data = ex1)
+gridEx1 <- cdc %>% data_grid(gender) %>% add_predictions(modelEx1)
+modelEx0 <- lm(wtdesire-weight ~ gender, data = ex0)
+gridEx0 <- cdc %>% data_grid(gender) %>% add_predictions(modelEx0)
+
+ex1plot <- ggplot(ex1, aes(gender)) + geom_point(aes(y = wtdesire-weight)) + geom_point(gridEx1, mapping = aes(y=pred), color="red", size=4) + geom_text(gridEx1, mapping = aes(x=gender, y=pred, label=round(pred, 2)), hjust=-0.2, vjust=0) + xlab("Gender") + ylab("Desired Weight - Current Weight") + ggtitle("Desired Weight Change for Males and Females \n who have Exercised in the Last Month") + theme(plot.title = element_text(size = 10, hjust = 0.5)) + ylim(-250, 250)
+#ex1plot
+
+ex0plot <- ggplot(ex0, aes(gender)) + geom_point(aes(y = wtdesire-weight)) + geom_point(gridEx0, mapping = aes(y=pred), color="red", size=4) + geom_text(gridEx0, mapping = aes(x=gender, y=pred, label=round(pred, 2)), hjust=-0.2, vjust=0) + xlab("Gender") + ylab("Desired Weight - Current Weight") + ggtitle("Desired Weight Change for Males and Females \n who have not Exercised in the Last Month") + theme(plot.title = element_text(size = 10, hjust = 0.5)) + ylim(-250, 250)
+#ex0plot
+
+ggarrange(ex0plot, ex1plot + rremove("y.title"))
+```
 
 
 Summary of who did what:
 
 David: Permutation test for overall question
+Tanner: Individual section
