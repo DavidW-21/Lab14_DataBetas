@@ -221,7 +221,7 @@ ggplot() + geom_histogram(aes(fakes)) +
   geom_vline(xintercept = real) +
   ggtitle("Correlation Permutation Test Between Height and Desired Weight Difference") +
   xlab("Correlation") +
-  ylab("")
+  ylab("Count")
 
 ```
 
@@ -229,3 +229,4 @@ Summary of who did what:
 
 David: Permutation test for overall question
 Tanner: Individual section
+Drew: Individual section
