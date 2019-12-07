@@ -11,6 +11,7 @@ library(tidyverse)
 library(modelr)
 source("http://www.openintro.org/stat/data/cdc.R")
 cdc <- as_tibble(cdc)
+cdc
 ```
 
 Group Section:
@@ -276,8 +277,43 @@ ggplot()+
   xlab("Desired weight - Height")
 
 ```
+Burke Subsection: I decided to look at the differences between female and male populations and whether these individuals were either smokers or nonsmokers. I thought this would be interesting to look at because it would provide insight into which gender was more likely to buy smoking products, and to what degree they would be likely to develop health complications related to smoking.
+
+Tools Used: I will be using data transformation tools to create a tightier dataset catered to my specific needs, getting rid of variables not being observed. Also, I will be using pipes, and transforming types to more easily suit my chosen visualization option.
+
+Answer: I found that of the male population, 52.582 percent do smoke. Of the female population, 42.47% smoke. of the total smoking population, it seems that 46.81% of smokers are women and the rest are men. I used a barchart to visualize the differences, and perhaps that shows that men are more susceptible to cigarette related health issues and are more likely to buy cigarettes or smoking products.
+```{r}
+install.packages("ggpubr")
+library(plyr)
+
+#Data Transformation
+GenderSmoke <- cdc %>% select(smoke100, gender)
+GenderSmoke$gender <- as.character(GenderSmoke$gender)
+names(GenderSmoke) <- c('Smoking', 'Gender')
+GenderSmoke
+m_smoke <- GenderSmoke %>% filter(Smoking == 1, Gender == 'm')
+f_smoke <- GenderSmoke %>% filter(Smoking == 1, Gender == 'f')
+
+count(m_smoke$Gender)
+#count = 5022/9569 = 52.582% of males smoke.
+
+count(f_smoke$Gender)
+#count = 4419/10404 = 42.47% of females smoke.
+
+
+count(GenderSmoke$Gender)
+count(GenderSmoke$Smoking)
+#9569/20000 = 47.845% of sample population are men.
+#9441/20000 = 47.205% of sample population smoke.
+
+ggplot(data = GenderSmoke, mapping = aes(x = Smoking, fill = Gender))+ geom_bar(stat = 'Count', width = .4)+
+  xlab('Smokers Left, Non-Smokers Right')+
+  ylab('Count')+
+  theme(axis.text.x=element_blank())
+```
 Summary of who did what:
 
 David: Permutation test for overall question
 Tanner: Individual section
 Drew: Individual section
+Burke: Individual Section
