@@ -145,13 +145,19 @@ Question: Is there a noticeable difference between men and women on how much the
 New Tool: Linear Modeling - I wanted to try out modeling the data and getting a prediction for desired weight change in males and females who have exercised recently and who have not exercised recently.
 
 Answer: Here we get a much clearer look at how the different genders want their weight to change. In general, females want to lose more weight than men do. A potentially surprising result we get from this model is that we see that people who have not exercised in the last month want to lose more weight on average than those who have exercised recently. Perhaps this is because recent exercisers have already lost some weight and thus don't feel like they need to lose as much as non-exercisers?
+
+
 ```{r}
+
+source("http://www.openintro.org/stat/data/cdc.R")
+cdc <- as_tibble(cdc)
+
 #install.packages("ggpubr")
 # library used to arrange the two plots on the same page
 library(ggpubr)
 
 # original graph:
-ggplot(data=cdc, mapping=aes(x = gender, y = wtdesire-weight)) + geom_jitter(mapping=aes(color=gender))+facet_wrap(~ exerany)
+#ggplot(data=cdc, mapping=aes(x = gender, y = wtdesire-weight)) + #(mapping=aes(color=gender))+facet_wrap(~ exerany)
 
 # separate by recent exercise
 ex1 <- filter(cdc, exerany == 1)
@@ -189,6 +195,10 @@ New tools: I will be using the correlation permutation test to test the relation
 Answer: As you can see from the graph, there is a statistically significant positive correlation between height and the desired change in weight. The actual correlation is 0.0837, while in the correlation permutation tests, no sample result exceeded 0.03. However, this correlation is quite low and may not be practically significant in the real world. To determine that would require a professional domain expert that works with census data such as this. Therefore, I can reject the null hypothesis, but the results of this test may or may not be useful over populations.
 
 ```{r}
+
+source("http://www.openintro.org/stat/data/cdc.R")
+cdc <- as_tibble(cdc)
+
 #original graph:
 ggplot(data = cdc) + geom_bar(mapping=aes(x = smoke100)) + facet_wrap(~ genhlth)
 
@@ -283,7 +293,7 @@ Tools Used: I will be using data transformation tools to create a tightier datas
 
 Answer: I found that of the male population, 52.582 percent do smoke. Of the female population, 42.47% smoke. of the total smoking population, it seems that 46.81% of smokers are women and the rest are men. I used a barchart to visualize the differences, and perhaps that shows that men are more susceptible to cigarette related health issues and are more likely to buy cigarettes or smoking products.
 ```{r}
-install.packages("ggpubr")
+#install.packages("ggpubr")
 library(plyr)
 
 #Data Transformation
